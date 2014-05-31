@@ -3,6 +3,7 @@ package service.impl;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import models.Log;
 import models.SystemApplication;
@@ -12,6 +13,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
@@ -55,7 +57,9 @@ public class MongoDAO implements LogRepository {
 		for (String dbName : db.getCollectionNames()) {
 			SystemApplication sysapp = new SystemApplication();
 			sysapp.name = dbName;
-			list.add(sysapp);
+			if (!dbName.equals("plongo") && !dbName.equals("system.indexes")) {
+				list.add(sysapp);
+			}
 		}
 
 		return list;
@@ -78,6 +82,32 @@ public class MongoDAO implements LogRepository {
 			e.printStackTrace();
 			return false;
 		}
+	}
+
+	public List<Log> getLogList(SystemApplication sysApp) {
+
+		List<Log> list = new ArrayList<Log>();
+
+		logsCollection = db.getCollection(sysApp.name);
+		DBCursor cursor = logsCollection.find().limit(500);
+		try {
+			while (cursor.hasNext()) {
+
+				DBObject resultElement = cursor.next();
+				Map<?,?> resultElementMap = resultElement.toMap();
+				Log log = new Log();
+				log.timestamp = (String) resultElementMap.get("timestamp");
+				log.content = (String) resultElementMap.get("content");
+				log.verbosity = (String) resultElementMap.get("verbosity");
+
+				list.add(log);
+
+			}
+		} finally {
+			cursor.close();
+		}
+
+		return list;
 	}
 
 }

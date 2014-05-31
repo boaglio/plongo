@@ -1,0 +1,58 @@
+@(sysApp:SystemApplication, logs: List[Log])
+
+@main(Messages("index.title")+" - [ "+ sysApp.name+ " ]") {
+
+  <br/>
+  <table >
+   <tr align="center" valign="middle">
+    <td>
+     <div class="alert alert-info">@Messages("details.view")  @sysApp.name</div>
+    </td>
+    <td>
+     &nbsp;
+    </td>
+    <td>
+     <img src="@routes.Assets.at("images/plongo.jpg")"/>
+    </td>
+    <td>
+     &nbsp;
+    </td>
+    <td>
+      <a class="alert alert-info" href="javascript:history.back()">@Messages("details.back") </a>
+     </td>
+   </tr>
+  </table>
+    <br/>
+     <table id="logs"  class="display" cellspacing="0" width="96%">
+     <thead>
+      <tr>
+        <th>@Messages("details.verbosity") </th>
+        <th>@Messages("details.timestamp") </th>
+        <th>@Messages("details.content") </th>
+      </tr>
+     </thead>
+     <tfoot>
+       <tr>
+        <th>@Messages("details.verbosity") </th>
+        <th>@Messages("details.timestamp") </th>
+        <th>@Messages("details.content") </th>
+      </tr>
+     </tfoot>
+     <tbody>
+     @for(log <- logs) {
+  	  <tr>
+  	    <td>@log.verbosity</td>
+  	    <td>@log.timestamp</td>
+  	    <td>@log.content</td>
+      </tr>
+	 }
+	 </tbody>
+   </table>
+  <br/>
+  <br/>
+  <script type="text/javascript">
+  $(document).ready(function() {
+	    $('#logs').dataTable();
+	} );
+  </script>
+}

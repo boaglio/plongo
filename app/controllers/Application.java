@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.List;
 
 import models.Log;
+import models.SystemApplication;
 import play.Play;
 import play.data.Form;
 import play.mvc.Controller;
@@ -19,6 +20,13 @@ public class Application extends Controller {
 	public static Result index() {
 		MongoDAO dao = new MongoDAO();
 		return ok(views.html.index.render(dao.getCollections()));
+	}
+
+	public static Result details(String collection) {
+		MongoDAO dao = new MongoDAO();
+		SystemApplication systemApplication = new SystemApplication();
+		systemApplication.name = collection;
+		return ok(views.html.details.render(systemApplication,dao.getLogList(systemApplication)));
 	}
 
 	public static Result upload() {

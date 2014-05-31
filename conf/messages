@@ -1,0 +1,21 @@
+
+# index
+
+
+index.title=Plongo
+index.showLog=Show  log
+index.uploadTitle=Upload log file
+index.sysAppCombo=Select system to add the log file
+index.uploadFile=Select a log file to upload:
+
+# details
+
+details.verbosity=Verbosity
+details.timestamp=Timestamp
+details.content=Content
+details.back=back
+details.view=Now browsing
+
+# upload
+
+upload.success=File uploaded successfuly
