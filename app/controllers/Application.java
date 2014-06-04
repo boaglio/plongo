@@ -36,8 +36,8 @@ public class Application extends Controller {
 		if (logFile != null) {
 
 			String sysAppId = Form.form().bindFromRequest().get("appId");
-			String extensaoPadraoDeArquivoTemporario = Play.application().configuration().getString("extensaoPadraoDeArquivoTemporario");
-			String fileName = "plongo-" + sysAppId + "-" + DateUtil.getTimestampStr() + extensaoPadraoDeArquivoTemporario;
+			String defaultTempFileExtension = Play.application().configuration().getString("defaultTempFileExtension");
+			String fileName = "plongo-" + sysAppId + "-" + DateUtil.getTimestampStr() + defaultTempFileExtension;
 			String contentType = logFile.getContentType();
 			File file = logFile.getFile();
 
@@ -50,13 +50,13 @@ public class Application extends Controller {
 			MongoDAO dao = new MongoDAO();
 			dao.storeLog(logs);
 
-			String diretorioTemporario = Play.application().configuration().getString("diretorioTemporario");
-			file.renameTo(new File(diretorioTemporario,fileName));
+			String tempDir = Play.application().configuration().getString("tempDir");
+			file.renameTo(new File(tempDir,fileName));
 
-			return ok(views.html.upload.render("Arquivo  \"" + fileName + "\" do tipo [" + contentType + "] foi carregado com sucesso !"));
+			return ok(views.html.upload.render("File  \"" + fileName + "\" type [" + contentType + "] loaded !"));
 
 		} else {
-			flash("error","Erro ao fazer upload");
+			flash("error","Upload error.");
 			return redirect(routes.Application.index());
 		}
 	}

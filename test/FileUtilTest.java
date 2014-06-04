@@ -12,7 +12,7 @@ public class FileUtilTest {
 
 	@Test
 	public void testConvertFileToLog() {
-		File f = new File("/tmp/teste.log");
+		File f = new File("/tmp/test.log");
 		List<Log> list = FileUtil.convertFileToLogList(f);
 
 		Assert.assertTrue(list != null);
