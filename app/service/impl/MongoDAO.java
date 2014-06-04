@@ -45,7 +45,7 @@ public class MongoDAO implements LogRepository {
 	public long storeLog(List<Log> logs) {
 		long count = 1;
 		for (Log log : logs) {
-			System.out.println(count + " -  adicionado: " + addLog(log));
+			System.out.println(count + " -  added: " + addLog(log));
 			count++;
 		}
 		return count;

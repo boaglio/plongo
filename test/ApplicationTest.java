@@ -29,12 +29,12 @@ public class ApplicationTest {
 		List<SystemApplication> apps = new ArrayList<SystemApplication>();
 		SystemApplication sysApp = new SystemApplication();
 		sysApp.id = "1";
-		sysApp.name = "Teste";
+		sysApp.name = "Test";
 		apps.add(sysApp);
 
 		Content html = views.html.index.render(apps);
 		assertThat(contentType(html)).isEqualTo("text/html");
-		assertThat(contentAsString(html)).contains("Teste");
+		assertThat(contentAsString(html)).contains("Test");
 	}
 
 }
