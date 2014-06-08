@@ -1,12 +1,12 @@
 package service.impl;
 
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import models.Log;
 import models.SystemApplication;
+import play.Play;
 import service.LogRepository;
 
 import com.mongodb.BasicDBObject;
@@ -17,35 +17,49 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
+import com.mongodb.MongoTimeoutException;
 import com.mongodb.ServerAddress;
 
 public class MongoDAO implements LogRepository {
 
+	private static final String MONGODB_INTERNAL_COLLECTION = "system.indexes";
+	private static final String FIELD_VERBOSITY = "verbosity";
+	private static final String FIELD_CONTENT = "content";
+	private static final String FIELD_TIMESTAMP = "timestamp";
 	private DBCollection logsCollection;
 	private DB db;
+	private String mongoHost;
+	private Integer mongoPort;
+	private Long mongoCappedCollectionSize;
+	private String mongodatabase;
+	private Boolean debug;
 
 	public MongoDAO() {
 		try {
-			MongoClient mongoClient = new MongoClient(new ServerAddress("localhost",27017));
-			db = mongoClient.getDB("plongo");
+			debug = Play.application().configuration().getBoolean("plongo.debug");
+			mongoHost = Play.application().configuration().getString("mongodb.server");
+			mongoPort = Play.application().configuration().getInt("mongodb.port");
+			mongodatabase = Play.application().configuration().getString("mongodb.database");
+			mongoCappedCollectionSize = Play.application().configuration().getLong("mongodb.collectionSize");
 
-			if (db.collectionExists("plongo")) {
-				logsCollection = db.getCollection("plongo");
-			} else {
-				DBObject options = BasicDBObjectBuilder.start().add("capped",true).add("size",2000000000l).get();
-				logsCollection = db.createCollection("plongo",options);
-			}
+			MongoClient mongoClient = new MongoClient(new ServerAddress(mongoHost,mongoPort));
+			db = mongoClient.getDB(mongodatabase);
 
-		} catch (UnknownHostException e) {
+		} catch (MongoTimeoutException mte) {
+
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	@Override
-	public long storeLog(List<Log> logs) {
+	public long storeLog(String collectionName,List<Log> logs) {
+
+		openOrCreateCollections(collectionName);
 		long count = 1;
 		for (Log log : logs) {
-			System.out.println(count + " -  added: " + addLog(log));
+			if (debug) {
+				System.out.println(count + " -  added: " + addLog(log));
+			}
 			count++;
 		}
 		return count;
@@ -57,7 +71,7 @@ public class MongoDAO implements LogRepository {
 		for (String dbName : db.getCollectionNames()) {
 			SystemApplication sysapp = new SystemApplication();
 			sysapp.name = dbName;
-			if (!dbName.equals("plongo") && !dbName.equals("system.indexes")) {
+			if (!dbName.equals(mongodatabase) && !dbName.equals(MONGODB_INTERNAL_COLLECTION)) {
 				list.add(sysapp);
 			}
 		}
@@ -69,10 +83,10 @@ public class MongoDAO implements LogRepository {
 
 		BasicDBObject logCollection = new BasicDBObject();
 
-		logCollection.append("_id",log.id).append("timestamp",log.timestamp).append("content",log.content);
+		logCollection.append("_id",log.id).append(FIELD_TIMESTAMP,log.timestamp).append(FIELD_CONTENT,log.content);
 
 		if (log.verbosity != null && !log.verbosity.equals("")) {
-			logCollection.append("verbosity",log.verbosity);
+			logCollection.append(FIELD_VERBOSITY,log.verbosity);
 		}
 
 		try {
@@ -96,9 +110,9 @@ public class MongoDAO implements LogRepository {
 				DBObject resultElement = cursor.next();
 				Map<?,?> resultElementMap = resultElement.toMap();
 				Log log = new Log();
-				log.timestamp = (String) resultElementMap.get("timestamp");
-				log.content = (String) resultElementMap.get("content");
-				log.verbosity = (String) resultElementMap.get("verbosity");
+				log.timestamp = (String) resultElementMap.get(FIELD_TIMESTAMP);
+				log.content = (String) resultElementMap.get(FIELD_CONTENT);
+				log.verbosity = (String) resultElementMap.get(FIELD_VERBOSITY);
 
 				list.add(log);
 
@@ -110,4 +124,19 @@ public class MongoDAO implements LogRepository {
 		return list;
 	}
 
+	private void openOrCreateCollections(String system) {
+		if (db.collectionExists(system)) {
+			if (debug) {
+				System.out.println("opening collection " + system);
+			}
+			logsCollection = db.getCollection(system);
+		} else {
+			if (debug) {
+				System.out.println("creating collection " + system);
+			}
+			DBObject options = BasicDBObjectBuilder.start().add("capped",true).add("size",mongoCappedCollectionSize).get();
+			logsCollection = db.createCollection(system,options);
+		}
+
+	}
 }

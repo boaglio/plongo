@@ -47,8 +47,13 @@ public class Application extends Controller {
 			List<Log> logs = FileUtil.convertFileToLogList(file);
 			System.out.println("log size=" + logs.size());
 
+			String collectionName = sysAppId;
+			if (sysAppId.equals("-1")) {
+				collectionName = logFile.getFilename();
+			}
+			System.out.println("collectionName=" + collectionName);
 			MongoDAO dao = new MongoDAO();
-			dao.storeLog(logs);
+			dao.storeLog(collectionName,logs);
 
 			String tempDir = Play.application().configuration().getString("tempDir");
 			file.renameTo(new File(tempDir,fileName));

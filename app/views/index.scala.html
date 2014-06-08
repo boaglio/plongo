@@ -33,6 +33,7 @@
 	       <th>@Messages("index.sysAppCombo")</th>
 		   <td>
 			<select name="appId" >
+			   <option value="-1">@Messages("index.newSystem")</option>
 			 @for(app <- apps) {
 			   <option value="@app.name">@app.name</option>
 			   }

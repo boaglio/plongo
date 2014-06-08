@@ -6,5 +6,6 @@ import models.Log;
 
 public interface LogRepository {
 
-	long storeLog(List<Log> logs);
+	long storeLog(String collectionName,List<Log> logs);
+
 }
