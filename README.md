@@ -5,6 +5,7 @@ Web Log Viewer powered by Play! + MongoDB
 
 
 ENGLISH:
+------
 
 You will need:
 
@@ -25,21 +26,26 @@ Quickstart:
 4. Fire up Plongo with "play run" inside Plongo directory
 5. Open your web browser at http://localhost:9000
 
+Contributing:
+
+1. See CONTRIBUTING.md
+
 Enjoy!
 
 
 
-PORTUGUES:
+PORTUGUÊS:
+------
 
 Você vai precisar de :
 
-1. Uma instância do MongoDB 
+1. Uma instância do MongoDB
 2. Play! Framework (2.2.x)
 3. Vários arquivos de log
 
 Convenção: MongoDB rodando local e em sua porta padrão
 
-Editar preferências do Plongo dentro do arquivo $PLONGO-DIR/conf/plongo.conf 
+Editar preferências do Plongo dentro do arquivo $PLONGO-DIR/conf/plongo.conf
 
 
 Quickstart:
@@ -47,10 +53,12 @@ Quickstart:
 1. Baixe e instale o MongoDB - http://www.mongodb.org/downloads
 2. Baixe e instale Play! Framework - http://www.playframework.com/
 3. Baixe e descompacte Plongo
-4. Inicie o Plongo rodando o comando "play run" dentro do diretório do Plongo 
+4. Inicie o Plongo rodando o comando "play run" dentro do diretório do Plongo
 5. Abra o seu browser no endereço http://localhost:9000
 
+Contributing:
+
+1. Veja CONTRIBUTING.md
+
 Aproveite!
-
-
 
